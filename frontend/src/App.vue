@@ -10,6 +10,7 @@
       <nav>
         <RouterLink to="/">Students</RouterLink>
         <RouterLink to="/courses">Courses</RouterLink>
+        <RouterLink to="/enrollments">Enrollments</RouterLink>
       </nav>
     </header>
 
@@ -44,6 +45,7 @@ header h1 {
 nav {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 nav a {

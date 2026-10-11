@@ -69,7 +69,7 @@ async function deleteStudent() {
     const response = await fetch(`${API_URL}/delete-student`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ id: student.value.id }),
     })
 
     if (response.status === 404) {
