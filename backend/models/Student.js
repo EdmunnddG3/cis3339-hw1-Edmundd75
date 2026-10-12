@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose');
 
+// Defining the structure of the Student schema with name, id, phone, and zip fields, all required and trimmed
 const studentSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,4 +26,4 @@ const studentSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+module.exports = mongoose.model('Student', studentSchema); // Exporting the Student model based on the defined schema for use in other parts of the application

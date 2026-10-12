@@ -10,22 +10,25 @@ const student = ref(null)
 const students = ref([])
 const loadingStudents = ref(false)
 
+// Local state variables for adding a new student
 const addName = ref('')
 const addId = ref('')
 const addPhone = ref('')
 const addZip = ref('')
 
+// Define local state variables for loading states and error messages
 const loadingSearch = ref(false)
 const loadingAdd = ref(false)
 const addErrorMessage = ref('')
 const appStore = useAppStore()
 
+// Success and error messages for student operations
 const { errorMessage } = storeToRefs(appStore)
 const studentSuccessMessage = ref('')
 
-const API_URL = 'http://localhost:3000'
+const API_URL = 'http://localhost:3000' // Define the backend API URL
 
-
+// Load the list of students from the backend when the component is mounted
 async function loadStudents() {
   loadingStudents.value = true
 
@@ -48,6 +51,7 @@ onMounted(() => {
   loadStudents()
 })
 
+// Searches for a student by name by sending a POST request to the backend and updates the student state
 async function searchStudent() {
   studentSuccessMessage.value = ''  
   errorMessage.value = ''
@@ -86,6 +90,7 @@ async function searchStudent() {
   }
 }
 
+// Removes a student from the backend and updates the student list
 async function deleteStudent() {
   if (!student.value) return
 
@@ -124,6 +129,7 @@ async function deleteStudent() {
   }
 }
 
+// Adds a new student to the backend and updates the student list
 async function addStudent() {
   studentSuccessMessage.value = ''
   addErrorMessage.value = ''

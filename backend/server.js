@@ -5,20 +5,21 @@ const path = require('path');
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const mongoose = require('mongoose');
 
+// Importing the Mongoose models for Student, Course, and Enrollment
 const Student = require('./models/Student');
 const Course = require('./models/Course');
 const Enrollment = require('./models/Enrollment');
 
-
 const app = express();
 const frontendPath = path.join(__dirname, '..', 'frontend', 'dist');
-app.use(express.static(frontendPath));
 
+// Serve static files from the frontend build directory, enable CORS for cross-origin requests, and parse incoming JSON requests
+app.use(express.static(frontendPath));
 app.use(cors());
 app.use(express.json());
 
 
- // Search for a student by name
+// Search for a student by name
 app.post('/find-student', async (req, res) => {
     try {
         const { name } = req.body;
@@ -309,7 +310,7 @@ app.get('/list-students', async (req, res) => {
   }
 });
 
-
+// Endpoint to list all courses
 app.get('/list-courses', async (req, res) => {
   try {
     const courses = await Course.find()
@@ -332,7 +333,7 @@ app.get(/.*/, (req, res) => {
 
 const PORT = 3000;
 
-
+// Connect to MongoDB and initialize indexes for Student, Course, and Enrollment models before starting the server
 mongoose.connect(process.env.MONGODB_URI)
     .then(async () => {
         await Promise.all([

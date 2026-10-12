@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+// Pinia store for managing application-wide messages and error messages
 export const useAppStore = defineStore('app', () => {
   const message = ref('')
   const errorMessage = ref('')

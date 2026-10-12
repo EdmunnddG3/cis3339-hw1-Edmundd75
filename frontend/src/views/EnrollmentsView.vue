@@ -3,18 +3,25 @@
 import { ref, onMounted } from 'vue'
 import StatusMessage from '../components/StatusMessage.vue'
 
-const API_URL = 'http://localhost:3000'
+// Define the backend API URL
+const API_URL = 'http://localhost:3000' 
 
+// State variables for students and courses
 const students = ref([])
 const courses = ref([])
+
+// State variables for selected student and course for enrollment, and the course to view enrollments
 const selectedStudentId = ref('')
 const selectedCourseId = ref('')
 const viewCourseId = ref('')
+
+// Define local state variables for success and error messages, and loading state
 const enrolledStudents = ref([])
 const enrollmentSuccessMessage = ref('')
 const loading = ref(false)
 const enrollmentError = ref('')
 
+// Load the list of students and courses from the backend when the component is mounted
 async function loadOptions() {
   enrollmentError.value = ''
 
@@ -36,6 +43,7 @@ async function loadOptions() {
   }
 }
 
+// Enrolls a student in a course by sending a POST request to the backend and updates the list of enrolled students
 async function addEnrollment() {
   enrollmentSuccessMessage.value = ''
   enrollmentError.value = '' 
@@ -75,6 +83,7 @@ async function addEnrollment() {
   }
 }
 
+// Searches for students enrolled in a specific course by sending a POST request to the backend and updates the list of enrolled students
 async function findEnrollments() {
   enrollmentError.value = ''
   enrolledStudents.value = []

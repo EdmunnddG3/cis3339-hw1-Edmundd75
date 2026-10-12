@@ -1,24 +1,32 @@
 
 <script setup>
-import { ref, onMounted } from 'vue'
+// Importing functions and components from Vue and Pinia for state management and component rendering
+import { ref, onMounted } from 'vue' 
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '../stores/app'
 import StatusMessage from '../components/StatusMessage.vue'
 
 const API_URL = 'http://localhost:3000'
 
+// State variables for course addition
 const courseId = ref('')
 const courseName = ref('')
+
+// Access the global error message from the app store
 const appStore = useAppStore()
 const { errorMessage } = storeToRefs(appStore)
+
+// Define local state variables for success and error messages, and loading state
 const courseSuccessMessage = ref('')
 const loading = ref(false)
 const addCourseError = ref('')
 
+// State variables for course search and deletion
 const searchCourseId = ref('')
 const foundCourse = ref(null)
 const courses = ref([])
 
+// Load the list of courses from the backend when the component is mounted
 async function loadCourses() {
   try {
     const response = await fetch(`${API_URL}/list-courses`)
@@ -35,6 +43,7 @@ async function loadCourses() {
   }
 }
 
+// Adds a new course to the backend and updates the course list
 async function addCourse() {
   errorMessage.value = ''
   addCourseError.value = ''
@@ -77,6 +86,7 @@ async function addCourse() {
   }
 }
 
+// Enter a course ID to search for a course in the backend
 async function searchCourse() {
   courseSuccessMessage.value = ''
   errorMessage.value = ''
@@ -110,6 +120,7 @@ async function searchCourse() {
   }
 }
 
+// Removes a course from the backend and updates the course list
 async function deleteCourse() {
   if (!foundCourse.value) return
 

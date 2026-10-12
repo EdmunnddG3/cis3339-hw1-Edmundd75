@@ -1,5 +1,7 @@
 ```vue
 <script setup>
+
+// Receives props for the status message component, including the message text and its type (success or error)
 defineProps({
   message: {
     type: String,
