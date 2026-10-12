@@ -332,6 +332,7 @@ app.get(/.*/, (req, res) => {
 
 const PORT = 3000;
 
+
 mongoose.connect(process.env.MONGODB_URI)
     .then(async () => {
         await Promise.all([
@@ -347,3 +348,8 @@ mongoose.connect(process.env.MONGODB_URI)
             console.log(`Server is running on http://localhost:${PORT}`);
         });
     })
+    .catch((error) => {
+        console.error('Failed to connect to MongoDB or initialize indexes:', error);
+        process.exit(1);
+    });
+
