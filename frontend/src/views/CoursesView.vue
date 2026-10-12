@@ -10,7 +10,8 @@ const API_URL = 'http://localhost:3000'
 const courseId = ref('')
 const courseName = ref('')
 const appStore = useAppStore()
-const { message, errorMessage } = storeToRefs(appStore)
+const { errorMessage } = storeToRefs(appStore)
+const courseSuccessMessage = ref('')
 const loading = ref(false)
 const addCourseError = ref('')
 
@@ -35,9 +36,9 @@ async function loadCourses() {
 }
 
 async function addCourse() {
-  message.value = ''
   errorMessage.value = ''
   addCourseError.value = ''
+  courseSuccessMessage.value = ''
 
   if (!courseId.value.trim() || !courseName.value.trim()) {
   addCourseError.value = 'Please enter both a course ID and course name.'
@@ -64,7 +65,7 @@ async function addCourse() {
       return
     }
 
-    message.value = 'Course added successfully!'
+    courseSuccessMessage.value = data.message || 'Course added successfully!'
     courseId.value = ''
     courseName.value = ''
     await loadCourses()
@@ -77,7 +78,7 @@ async function addCourse() {
 }
 
 async function searchCourse() {
-  message.value = ''
+  courseSuccessMessage.value = ''
   errorMessage.value = ''
   foundCourse.value = null
 
@@ -116,7 +117,7 @@ async function deleteCourse() {
 
   if (!confirm(`Delete course ${courseIdToDelete}?`)) return
 
-  message.value = ''
+  courseSuccessMessage.value = ''
   errorMessage.value = ''
 
   try {
@@ -135,7 +136,7 @@ async function deleteCourse() {
 
     foundCourse.value = null
     searchCourseId.value = ''
-    message.value = 'Course deleted successfully!'
+    courseSuccessMessage.value = data.message || 'Course deleted successfully!'
     await loadCourses()
   } catch (error) {
     console.error('Error deleting course:', error)
@@ -168,6 +169,7 @@ onMounted(loadCourses)
       </button>
     </form>
 
+        <StatusMessage :message="courseSuccessMessage" type="success" />
         <StatusMessage :message="addCourseError" type="error" />
 
     <h3>All Courses</h3>
@@ -203,7 +205,6 @@ onMounted(loadCourses)
       <button type="button" @click="deleteCourse">Delete Course</button>
     </div>
 
-<StatusMessage :message="message" type="success" />
 <StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>

@@ -18,12 +18,13 @@ const loadingAdd = ref(false)
 const addErrorMessage = ref('')
 const appStore = useAppStore()
 
-const { message, errorMessage } = storeToRefs(appStore)
+const { errorMessage } = storeToRefs(appStore)
+const studentSuccessMessage = ref('')
 
 const API_URL = 'http://localhost:3000'
 
 async function searchStudent() {
-  message.value = ''
+  studentSuccessMessage.value = ''  
   errorMessage.value = ''
   student.value = null
 
@@ -67,8 +68,8 @@ async function deleteStudent() {
 
   if (!confirm(`Delete student ${name}?`)) return
 
-  message.value = ''
   errorMessage.value = ''
+  studentSuccessMessage.value = ''
 
   try {
     const response = await fetch(`${API_URL}/delete-student`, {
@@ -90,7 +91,7 @@ async function deleteStudent() {
 
     student.value = null
     studentName.value = ''
-    message.value = 'Student deleted successfully.'
+    studentSuccessMessage.value = 'Student deleted successfully.'
   } catch (error) {
     console.error('Error deleting student:', error)
     errorMessage.value = 'Could not connect to the backend.'
@@ -98,7 +99,7 @@ async function deleteStudent() {
 }
 
 async function addStudent() {
-  message.value = ''
+  studentSuccessMessage.value = ''
   addErrorMessage.value = ''
 
   if (!addName.value.trim() || !addId.value.trim() ||
@@ -131,7 +132,7 @@ async function addStudent() {
     addId.value = ''
     addPhone.value = ''
     addZip.value = ''
-    message.value = 'Student added successfully!'
+    studentSuccessMessage.value = 'Student added successfully!'
   } catch (error) {
     console.error('Error adding student:', error)
     addErrorMessage.value = 'Could not connect to the backend.'
@@ -161,6 +162,7 @@ async function addStudent() {
       </form>
 
         <StatusMessage :message="errorMessage" type="error" />
+        <StatusMessage :message="studentSuccessMessage" type="success" />
 
       <table v-if="student">
         <thead>
@@ -211,7 +213,6 @@ async function addStudent() {
       <StatusMessage :message="addErrorMessage" type="error" />
     </section>
 
-<StatusMessage :message="message" type="success" />
   </section>
 </template>
 

@@ -1,8 +1,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useAppStore } from '../stores/app'
 import StatusMessage from '../components/StatusMessage.vue'
 
 const API_URL = 'http://localhost:3000'
@@ -13,8 +11,7 @@ const selectedStudentId = ref('')
 const selectedCourseId = ref('')
 const viewCourseId = ref('')
 const enrolledStudents = ref([])
-const appStore = useAppStore()
-const { message } = storeToRefs(appStore)
+const enrollmentSuccessMessage = ref('')
 const loading = ref(false)
 const enrollmentError = ref('')
 
@@ -40,8 +37,8 @@ async function loadOptions() {
 }
 
 async function addEnrollment() {
-  message.value = ''
-  enrollmentError.value = ''
+  enrollmentSuccessMessage.value = ''
+  enrollmentError.value = '' 
 
   if (!selectedStudentId.value || !selectedCourseId.value) {
     enrollmentError.value = 'Please select both a student and a course.'
@@ -67,7 +64,7 @@ async function addEnrollment() {
       return
     }
 
-    message.value = data.message || 'Student enrolled successfully!'
+    enrollmentSuccessMessage.value = data.message || 'Student enrolled successfully!'
     viewCourseId.value = selectedCourseId.value
     await findEnrollments()
   } catch (error) {
@@ -159,6 +156,7 @@ onMounted(loadOptions)
       </button>
     </form>
 
+    <StatusMessage :message="enrollmentSuccessMessage" type="success" />
     <StatusMessage :message="enrollmentError" type="error" />
 
     <h3>View Students Enrolled in a Course</h3>
@@ -191,13 +189,12 @@ onMounted(loadOptions)
     </div>
 
     <p
-      v-else-if="viewCourseId && !enrollmentError && !message"
+      v-else-if="viewCourseId && !enrollmentError && !enrollmentSuccessMessage"
       role="status"
     >
       No enrolled students are currently displayed. Select View Enrolled Students to refresh the list.
     </p>
 
-<StatusMessage :message="message" type="success" />
   </section>
 </template>
 
