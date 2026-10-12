@@ -108,6 +108,20 @@ npm run build
 
 The Express backend serves the generated frontend files from `frontend/dist`.
 
+## Automated Tests
+
+The backend includes automated API tests using Node.js's built-in test runner.
+
+Make sure MongoDB is running and the application backend is available at `http://localhost:3000`. From the project root, run:
+
+```bash
+npm --prefix backend test
+```
+
+The tests verify that the student and course list endpoints return successful responses containing arrays of records.
+
+To run the tests, keep the backend server running in a separate terminal.
+
 ## Notes
 
 - Keep MongoDB running while using the application.
