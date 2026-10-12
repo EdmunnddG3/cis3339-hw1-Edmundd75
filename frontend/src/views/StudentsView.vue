@@ -1,6 +1,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '../stores/app'
+import StatusMessage from '../components/StatusMessage.vue'
 
 const studentName = ref('')
 const student = ref(null)
@@ -12,8 +15,8 @@ const addZip = ref('')
 
 const loadingSearch = ref(false)
 const loadingAdd = ref(false)
-const message = ref('')
-const errorMessage = ref('')
+const appStore = useAppStore()
+const { message, errorMessage } = storeToRefs(appStore)
 
 const API_URL = 'http://localhost:3000'
 
@@ -202,12 +205,8 @@ async function addStudent() {
       </form>
     </section>
 
-    <p v-if="message" class="success-message" role="status">
-      {{ message }}
-    </p>
-    <p v-if="errorMessage" class="error-message" role="alert">
-      {{ errorMessage }}
-    </p>
+<StatusMessage :message="message" type="success" />
+<StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>
 

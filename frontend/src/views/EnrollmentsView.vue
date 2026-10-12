@@ -1,6 +1,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '../stores/app'
+import StatusMessage from '../components/StatusMessage.vue'
 
 const API_URL = 'http://localhost:3000'
 
@@ -10,8 +13,8 @@ const selectedStudentId = ref('')
 const selectedCourseId = ref('')
 const viewCourseId = ref('')
 const enrolledStudents = ref([])
-const message = ref('')
-const errorMessage = ref('')
+const appStore = useAppStore()
+const { message, errorMessage } = storeToRefs(appStore)
 const loading = ref(false)
 
 async function loadOptions() {
@@ -191,7 +194,7 @@ onMounted(loadOptions)
       No enrolled students are currently displayed. Select View Enrolled Students to refresh the list.
     </p>
 
-    <p v-if="message" role="status">{{ message }}</p>
-    <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
+<StatusMessage :message="message" type="success" />
+<StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>
