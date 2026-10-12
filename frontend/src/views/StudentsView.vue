@@ -15,7 +15,9 @@ const addZip = ref('')
 
 const loadingSearch = ref(false)
 const loadingAdd = ref(false)
+const addErrorMessage = ref('')
 const appStore = useAppStore()
+
 const { message, errorMessage } = storeToRefs(appStore)
 
 const API_URL = 'http://localhost:3000'
@@ -97,11 +99,11 @@ async function deleteStudent() {
 
 async function addStudent() {
   message.value = ''
-  errorMessage.value = ''
+  addErrorMessage.value = ''
 
   if (!addName.value.trim() || !addId.value.trim() ||
       !addPhone.value.trim() || !addZip.value.trim()) {
-    errorMessage.value = 'Please complete all student fields.'
+    addErrorMessage.value = 'Please complete all student fields.'
     return
   }
 
@@ -121,7 +123,7 @@ async function addStudent() {
 
     if (!response.ok) {
       const error = await response.json()
-      errorMessage.value = `Error: ${error.error || 'Could not add student.'}`
+      addErrorMessage.value = `Error: ${error.message || error.error || 'Could not add student.'}`
       return
     }
 
@@ -132,7 +134,7 @@ async function addStudent() {
     message.value = 'Student added successfully!'
   } catch (error) {
     console.error('Error adding student:', error)
-    errorMessage.value = 'Could not connect to the backend.'
+    addErrorMessage.value = 'Could not connect to the backend.'
   } finally {
     loadingAdd.value = false
   }
@@ -157,6 +159,8 @@ async function addStudent() {
           {{ loadingSearch ? 'Searching...' : 'Search' }}
         </button>
       </form>
+
+        <StatusMessage :message="errorMessage" type="error" />
 
       <table v-if="student">
         <thead>
@@ -203,47 +207,116 @@ async function addStudent() {
           {{ loadingAdd ? 'Adding...' : 'Add Student' }}
         </button>
       </form>
+      
+      <StatusMessage :message="addErrorMessage" type="error" />
     </section>
 
 <StatusMessage :message="message" type="success" />
-<StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>
 
+```css
 <style scoped>
 .students-page {
-  max-width: 900px;
+  max-width: 1050px;
   margin: 0 auto;
+  color: #202d40;
+}
+
+.students-page > h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #14283f;
 }
 
 .panel {
-  margin: 24px 0;
-  padding: 20px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  margin: 22px 0;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e3eaf0;
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(20, 40, 63, 0.045);
+  transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.panel:hover {
+  border-color: #d2e6dd;
+  box-shadow: 0 12px 32px rgba(20, 40, 63, 0.075);
+}
+
+.panel h3 {
+  margin: 0 0 22px;
+  color: #14283f;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.3px;
 }
 
 form {
   display: grid;
   gap: 10px;
-  max-width: 420px;
+  max-width: 480px;
+}
+
+label {
+  margin-top: 5px;
+  color: #40536a;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 input {
-  padding: 10px;
-  border: 1px solid #bbb;
-  border-radius: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #d9e2e9;
+  border-radius: 9px;
+  background: #fbfcfd;
+  color: #202d40;
+  font-size: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+input::placeholder {
+  color: #8997a7;
+}
+
+input:hover {
+  border-color: #a9c7bb;
+}
+
+input:focus {
+  border-color: #318364;
+  outline: 3px solid rgba(49, 131, 100, 0.14);
+  outline-offset: 1px;
+  background: #ffffff;
 }
 
 button {
   width: fit-content;
-  padding: 10px 16px;
+  min-height: 43px;
+  margin-top: 10px;
+  padding: 11px 20px;
   border: 0;
-  border-radius: 4px;
-  background: #24476b;
-  color: white;
+  border-radius: 9px;
+  background: #14283f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #28506b;
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid #40b98c;
+  outline-offset: 3px;
 }
 
 button:disabled {
@@ -252,20 +325,53 @@ button:disabled {
 }
 
 .delete-button {
-  background: #a52828;
+  background: #fff0ed;
+  color: #a43830;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: #a43830;
+  color: #ffffff;
 }
 
 table {
   width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
+  margin-top: 24px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e3eaf0;
+  border-radius: 12px;
+  font-size: 13px;
 }
 
 th,
 td {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8edf1;
   text-align: left;
+}
+
+th {
+  background: #f1f7f4;
+  color: #40536a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+td {
+  color: #34465a;
+  overflow-wrap: anywhere;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: #f8fbf9;
 }
 
 .success-message {
@@ -275,4 +381,45 @@ td {
 .error-message {
   color: #a52828;
 }
+
+@media (max-width: 600px) {
+  .students-page > h2 {
+    font-size: 24px;
+  }
+
+  .panel {
+    margin: 16px 0;
+    padding: 19px;
+    border-radius: 14px;
+  }
+
+  .panel h3 {
+    font-size: 17px;
+    margin-bottom: 18px;
+  }
+
+  form {
+    max-width: none;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  button,
+  input {
+    transition: none;
+  }
+}
 </style>
+```

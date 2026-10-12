@@ -12,6 +12,7 @@ const courseName = ref('')
 const appStore = useAppStore()
 const { message, errorMessage } = storeToRefs(appStore)
 const loading = ref(false)
+const addCourseError = ref('')
 
 const searchCourseId = ref('')
 const foundCourse = ref(null)
@@ -36,11 +37,12 @@ async function loadCourses() {
 async function addCourse() {
   message.value = ''
   errorMessage.value = ''
+  addCourseError.value = ''
 
   if (!courseId.value.trim() || !courseName.value.trim()) {
-    errorMessage.value = 'Please enter both a course ID and course name.'
-    return
-  }
+  addCourseError.value = 'Please enter both a course ID and course name.'
+  return
+}
 
   loading.value = true
 
@@ -57,7 +59,8 @@ async function addCourse() {
     const data = await response.json()
 
     if (!response.ok) {
-      errorMessage.value = data.message || 'Could not add course.'
+      addCourseError.value = data.message || 'Could not add course.'
+      console.log('Add Course error:', addCourseError.value)
       return
     }
 
@@ -67,7 +70,7 @@ async function addCourse() {
     await loadCourses()
   } catch (error) {
     console.error('Error adding course:', error)
-    errorMessage.value = 'Could not connect to the backend.'
+    addCourseError.value = 'Could not connect to the backend.'
   } finally {
     loading.value = false
   }
@@ -165,6 +168,8 @@ onMounted(loadCourses)
       </button>
     </form>
 
+        <StatusMessage :message="addCourseError" type="error" />
+
     <h3>All Courses</h3>
 
     <p v-if="courses.length === 0">No courses have been added yet.</p>
@@ -202,3 +207,171 @@ onMounted(loadCourses)
 <StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>
+
+```vue
+<style scoped>
+section {
+  max-width: 1050px;
+  margin: 0 auto;
+  color: #202d40;
+}
+
+h2 {
+  margin: 0 0 24px;
+  color: #14283f;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+h3 {
+  margin: 26px 0 16px;
+  color: #14283f;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+form,
+section > ul,
+section > p,
+section > div:has(h4) {
+  margin-bottom: 22px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e3eaf0;
+  border-radius: 16px;
+  box-shadow: 0 8px 26px rgba(20, 40, 63, 0.045);
+}
+
+form {
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+}
+
+form div {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  color: #40536a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #d9e2e9;
+  border-radius: 9px;
+  background: #fbfcfd;
+  color: #202d40;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #318364;
+  outline: 3px solid rgba(49, 131, 100, 0.14);
+  outline-offset: 1px;
+}
+
+button {
+  width: fit-content;
+  min-height: 43px;
+  padding: 11px 20px;
+  border: 0;
+  border-radius: 9px;
+  background: #14283f;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #28506b;
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid #40b98c;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+ul {
+  list-style: none;
+  padding-left: 24px;
+}
+
+li {
+  padding: 14px 0;
+  border-bottom: 1px solid #e8edf1;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+li:last-child {
+  border-bottom: 0;
+}
+
+li strong {
+  color: #318364;
+}
+
+h4 {
+  margin-top: 0;
+  color: #14283f;
+}
+
+section > div:has(h4) p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+section > div:has(h4) button {
+  background: #fff0ed;
+  color: #a43830;
+}
+
+section > div:has(h4) button:hover {
+  background: #a43830;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 17px;
+  }
+
+  form,
+  section > ul,
+  section > p,
+  section > div:has(h4) {
+    padding: 18px;
+    border-radius: 13px;
+  }
+
+  form {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}
+</style>
+```

@@ -14,11 +14,12 @@ const selectedCourseId = ref('')
 const viewCourseId = ref('')
 const enrolledStudents = ref([])
 const appStore = useAppStore()
-const { message, errorMessage } = storeToRefs(appStore)
+const { message } = storeToRefs(appStore)
 const loading = ref(false)
+const enrollmentError = ref('')
 
 async function loadOptions() {
-  errorMessage.value = ''
+  enrollmentError.value = ''
 
   try {
     const [studentResponse, courseResponse] = await Promise.all([
@@ -34,16 +35,16 @@ async function loadOptions() {
     courses.value = await courseResponse.json()
   } catch (error) {
     console.error('Error loading enrollment options:', error)
-    errorMessage.value = 'Could not load students and courses. Check the backend.'
+    enrollmentError.value = 'Could not load students and courses. Check the backend.'
   }
 }
 
 async function addEnrollment() {
   message.value = ''
-  errorMessage.value = ''
+  enrollmentError.value = ''
 
   if (!selectedStudentId.value || !selectedCourseId.value) {
-    errorMessage.value = 'Please select both a student and a course.'
+    enrollmentError.value = 'Please select both a student and a course.'
     return
   }
 
@@ -62,7 +63,7 @@ async function addEnrollment() {
     const data = await response.json()
 
     if (!response.ok) {
-      errorMessage.value = data.message || 'Could not enroll student.'
+      enrollmentError.value = data.message || 'Could not enroll student.'
       return
     }
 
@@ -71,18 +72,18 @@ async function addEnrollment() {
     await findEnrollments()
   } catch (error) {
     console.error('Error enrolling student:', error)
-    errorMessage.value = 'Could not connect to the backend.'
+    enrollmentError.value = 'Could not connect to the backend.'
   } finally {
     loading.value = false
   }
 }
 
 async function findEnrollments() {
-  errorMessage.value = ''
+  enrollmentError.value = ''
   enrolledStudents.value = []
 
   if (!viewCourseId.value) {
-    errorMessage.value = 'Please select a course to view its enrolled students.'
+    enrollmentError.value = 'Please select a course to view its enrolled students.'
     return
   }
 
@@ -96,14 +97,14 @@ async function findEnrollments() {
     const data = await response.json()
 
     if (!response.ok) {
-      errorMessage.value = data.message || 'Could not retrieve enrollments.'
+      enrollmentError.value = data.message || 'Could not retrieve enrollments.'
       return
     }
 
     enrolledStudents.value = data.students
   } catch (error) {
     console.error('Error finding enrollments:', error)
-    errorMessage.value = 'Could not connect to the backend.'
+    enrollmentError.value = 'Could not connect to the backend.'
   }
 }
 
@@ -158,6 +159,8 @@ onMounted(loadOptions)
       </button>
     </form>
 
+    <StatusMessage :message="enrollmentError" type="error" />
+
     <h3>View Students Enrolled in a Course</h3>
 
     <form @submit.prevent="findEnrollments">
@@ -188,13 +191,202 @@ onMounted(loadOptions)
     </div>
 
     <p
-      v-else-if="viewCourseId && !errorMessage && !message"
+      v-else-if="viewCourseId && !enrollmentError && !message"
       role="status"
     >
       No enrolled students are currently displayed. Select View Enrolled Students to refresh the list.
     </p>
 
 <StatusMessage :message="message" type="success" />
-<StatusMessage :message="errorMessage" type="error" />
   </section>
 </template>
+
+```vue
+<style scoped>
+section {
+  max-width: 1050px;
+  margin: 0 auto;
+  color: #202d40;
+}
+
+h2 {
+  margin: 0 0 24px;
+  color: #14283f;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+h3 {
+  margin: 26px 0 16px;
+  color: #14283f;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e3eaf0;
+  border-radius: 16px;
+  box-shadow: 0 8px 26px rgba(20, 40, 63, 0.045);
+}
+
+form div {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  color: #40536a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #d9e2e9;
+  border-radius: 9px;
+  background: #fbfcfd;
+  color: #202d40;
+  font: inherit;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus {
+  border-color: #318364;
+  outline: 3px solid rgba(49, 131, 100, 0.14);
+  outline-offset: 1px;
+}
+
+button {
+  width: fit-content;
+  min-height: 43px;
+  padding: 11px 20px;
+  border: 0;
+  border-radius: 9px;
+  background: #14283f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #28506b;
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid #40b98c;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+ul {
+  margin: 0 0 24px;
+  padding: 22px 24px;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #e3eaf0;
+  border-radius: 16px;
+  box-shadow: 0 8px 26px rgba(20, 40, 63, 0.045);
+}
+
+li {
+  padding: 14px 0;
+  border-bottom: 1px solid #e8edf1;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+li:last-child {
+  border-bottom: 0;
+}
+
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e3eaf0;
+  border-radius: 12px;
+  background: #ffffff;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8edf1;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+th {
+  background: #f1f7f4;
+  color: #40536a;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+p {
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 17px;
+  }
+
+  form,
+  ul {
+    padding: 18px;
+    border-radius: 13px;
+  }
+
+  form {
+    max-width: none;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}
+</style>
+```
