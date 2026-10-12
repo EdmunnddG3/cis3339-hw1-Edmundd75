@@ -127,3 +127,12 @@ To run the tests, keep the backend server running in a separate terminal.
 - Keep MongoDB running while using the application.
 - The application uses the local MongoDB database named `cis3339_homework1`.
 - This assignment uses a local development database. Do not put real passwords or private credentials in version control.
+
+## AI Tools and Acknowledgment
+
+**ChatGPT (OpenAI)** was used as an AI assistance tool during the development of this project. It helped with understanding code, troubleshooting errors, improving the user interface, and organizing project documentation.
+
+All AI-generated suggestions were reviewed and adapted as needed for the project. I used the AI tool for understanding, testing, and verifying the submitted code.
+
+**Tool:** ChatGPT by OpenAI  
+**Website:** https://chatgpt.com/
