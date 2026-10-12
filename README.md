@@ -56,7 +56,7 @@ Create or check `backend/.env`. It should contain:
 MONGODB_URI=mongodb://127.0.0.1:27017/cis3339_homework1
 ```
 
-Make sure your local MongoDB server is running.
+On Windows, open the Services application by pressing **Windows + R**, entering `services.msc`, and pressing Enter. Find **MongoDB Server (MongoDB)**, right-click it, and select **Start** if it is not already running. If the service is already running, no action is needed.
 
 ### 3. Install frontend dependencies
 
