@@ -1,12 +1,14 @@
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '../stores/app'
 import StatusMessage from '../components/StatusMessage.vue'
 
 const studentName = ref('')
 const student = ref(null)
+const students = ref([])
+const loadingStudents = ref(false)
 
 const addName = ref('')
 const addId = ref('')
@@ -22,6 +24,29 @@ const { errorMessage } = storeToRefs(appStore)
 const studentSuccessMessage = ref('')
 
 const API_URL = 'http://localhost:3000'
+
+
+async function loadStudents() {
+  loadingStudents.value = true
+
+  try {
+    const response = await fetch(`${API_URL}/list-students`)
+
+    if (!response.ok) {
+      throw new Error('Failed to load students.')
+    }
+
+    students.value = await response.json()
+  } catch (error) {
+    console.error('Error loading students:', error)
+  } finally {
+    loadingStudents.value = false
+  }
+}
+
+onMounted(() => {
+  loadStudents()
+})
 
 async function searchStudent() {
   studentSuccessMessage.value = ''  
@@ -90,6 +115,7 @@ async function deleteStudent() {
     }
 
     student.value = null
+    await loadStudents()
     studentName.value = ''
     studentSuccessMessage.value = 'Student deleted successfully.'
   } catch (error) {
@@ -133,6 +159,7 @@ async function addStudent() {
     addPhone.value = ''
     addZip.value = ''
     studentSuccessMessage.value = 'Student added successfully!'
+    await loadStudents()
   } catch (error) {
     console.error('Error adding student:', error)
     addErrorMessage.value = 'Could not connect to the backend.'
@@ -188,10 +215,43 @@ async function addStudent() {
           </tr>
         </tbody>
       </table>
-    </section>
 
-    <section class="panel">
-      <h3>Add Student</h3>
+</section>
+
+<section class="panel">
+  <h3>All Students</h3>
+
+  <p v-if="loadingStudents">Loading students...</p>
+
+  <p v-else-if="students.length === 0">
+    No students have been added yet.
+  </p>
+
+  <div v-else class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Student ID</th>
+          <th>Phone</th>
+          <th>ZIP Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in students" :key="item.id">
+          <td>{{ item.name }}</td>
+          <td>{{ item.id }}</td>
+          <td>{{ item.phone }}</td>
+          <td>{{ item.zip }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h3>Add Student</h3>
+
       <form @submit.prevent="addStudent">
         <label for="addName">Name</label>
         <input id="addName" v-model="addName" type="text" />
